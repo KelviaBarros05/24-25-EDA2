@@ -13,18 +13,27 @@ public class Indice {
 
     public void agregar(String valor, int posicion) {
         int indiceValor = -1;
-        int i = 0;
 
-        while (i < cantidadValores && indiceValor == -1) {
+        for (int i = 0; i < cantidadValores; i++) {
             if (valores[i].equals(valor)) {
                 indiceValor = i;
+                break;
             }
-            i++;
         }
 
         if (indiceValor == -1) {
-            valores[cantidadValores] = valor;
-            indiceValor = cantidadValores;
+            int i = cantidadValores - 1;
+            while (i >= 0 && valores[i].compareTo(valor) > 0) {
+                valores[i + 1] = valores[i];
+                posiciones[i + 1] = posiciones[i];
+                contadores[i + 1] = contadores[i];
+                i--;
+            }
+
+            indiceValor = i + 1;
+            valores[indiceValor] = valor;
+            posiciones[indiceValor] = new int[posiciones[0].length];
+            contadores[indiceValor] = 0;
             cantidadValores++;
         }
 
@@ -33,26 +42,16 @@ public class Indice {
     }
 
     public int[] buscar(String valor) {
-        int indiceValor = -1;
-        int posicion = 0;
-
-        while (posicion < cantidadValores && indiceValor == -1) {
-            if (valores[posicion].equals(valor)) {
-                indiceValor = posicion;
+        for (int i = 0; i < cantidadValores; i++) {
+            if (valores[i].equals(valor)) {
+                int[] resultado = new int[contadores[i]];
+                for (int j = 0; j < contadores[i]; j++) {
+                    resultado[j] = posiciones[i][j];
+                }
+                return resultado;
             }
-            posicion++;
         }
-
-        if (indiceValor == -1) {
-            return new int[0];
-        }
-
-        int[] resultado = new int[contadores[indiceValor]];
-        for (int i = 0; i < contadores[indiceValor]; i++) {
-            resultado[i] = posiciones[indiceValor][i];
-        }
-
-        return resultado;
+        return new int[0];
     }
 
     public boolean contiene(String valor) {
